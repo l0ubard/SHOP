@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE SPOT</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Anton&family=Syne:wght@400;600;800&display=swap');
+
+        :root {
+            --primary: #0f0f0f;
+            --accent: #ff3e3e;
+            --secondary: #f8f8f8;
+            --gradient: linear-gradient(135deg, var(--accent), #ff8f8f);
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes scale {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        a, button {
+            cursor: none;
+        }
+
+        body {
+            font-family: 'Syne', sans-serif;
+            background: var(--secondary);
+            color: var(--primary);
+        }
+
+        .cursor {
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.3s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor.hover {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 62, 62, 0.2);
+        }
+
+        nav {
+            position: fixed;
+            width: 100%;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(15, 15, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass);
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            padding: 1rem 2rem;
+            background: rgba(15, 15, 15, 0.95);
+        }
+
+        .logo {
+            font-family: 'Anton', sans-serif;
+            text-decoration: none;
+            color: var(--secondary);
+            font-size: 2rem;
+            letter-spacing: 2px;
+        }
+
+        .menu {
+            display: flex;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .menu a {
+            text-decoration: none;
+            color: var(--secondary);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            font-weight: 600;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .menu a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.3s ease;
+        }
+
+        .menu a:hover::after {
+            width: 100%;
+        }
+
+        .cart-icon {
+            position: relative;
+            font-size: 1.2rem;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--accent);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: var(--secondary);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?q=80&w=2070') center/cover;
+            opacity: 0.3;
+            animation: scale 20s infinite alternate;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, var(--primary) 100%);
+            pointer-events: none;
+        }
+
+        .hero-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 45%, rgba(255, 255, 255, 0.1) 50%, transparent 55%);
+            animation: shine 6s infinite;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(4rem, 15vw, 12rem);
+            line-height: 0.9;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+        }
+
+        .collection {
+            padding: 6rem 4vw;
+        }
+
+        .collection-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .collection-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .collection-header p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 600px;
+            margin: 1rem auto;
+            line-height: 1.6;
+        }
+
+        .collection-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .filter-menu {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .filter-btn {
+            background: none;
+            border: 2px solid var(--primary);
+            font-family: 'Syne', sans-serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.8rem 1.5rem;
+            font-weight: 600;
+            transition: 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+            animation: fadeIn 0.6s ease forwards;
+            animation-delay: calc(var(--order) * 0.1s);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 45%, rgba(255, 255, 255, 0.1) 50%, transparent 55%);
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .product-card:hover::before {
+            opacity: 1;
+            animation: shine 1.5s;
+        }
+
+        .product-image {
+            position: relative;
+            padding-bottom: 125%;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.1);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .product-location {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .sale-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #666;
+        }
+
+        .product-reviews {
+            margin-bottom: 1rem;
+        }
+
+        .stars {
+            color: gold;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-count {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .sale-tag {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--accent);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            font-family: 'Anton', sans-serif;
+            font-size: 1rem;
+            z-index: 1;
+            transform: rotate(3deg);
+        }
+
+        .add-to-cart {
+            width: 100%;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-to-cart::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .add-to-cart:hover::before {
+            left: 100%;
+        }
+
+        .add-to-cart:hover {
+            background: var(--accent);
+        }
+
+        .quick-add {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem;
+            background: rgba(15, 15, 15, 0.9);
+            color: white;
+            transform: translateY(100%);
+            transition: 0.3s ease;
+        }
+
+        .product-card:hover .quick-add {
+            transform: translateY(0);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .sale-tag {
+            background: var(--gradient);
+            animation: pulse 2s infinite;
+        }
+
+        .hero h1 {
+            animation: float 6s ease-in-out infinite;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+
+        .filter-btn {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient);
+            transition: 0.5s;
+            z-index: -1;
+        }
+
+        .filter-btn:hover::before {
+            left: 0;
+        }
+
+        .filter-btn:hover {
+            color: var(--secondary);
+            border-color: transparent;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: clamp(3rem, 10vw, 8rem);
+            }
+
+            .filter-menu {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .filter-btn {
+                width: calc(50% - 0.5rem);
+            }
+        }
+    </style>
+    <script>
+        // Curseur personnalisé
+        const cursor = document.querySelector('.cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+
+        // Animation de la navbar au scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Animation des cartes produits
+        document.querySelectorAll('.product-card').forEach((card, index) => {
+            card.style.setProperty('--order', index);
+        });
+    </script>
+</head>
+<body>
+    <div class="cursor"></div>
+
+    <nav>
+        <a href="/" class="logo"><img src="logo.png" alt="THE SPOT" style="height: 40px;"></a>
+        <div class="menu">
+            <a href="/collection">Collection</a>
+            <a href="/about">Histoire</a>
+            <a href="/cart" class="cart-icon">🛒
+                <span class="cart-count">3</span>
+            </a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <img src="logo.png" alt="THE SPOT" style="height: 200px;">
+        </div>
+        <div class="scroll-indicator">↓</div>
+    </section>
+
+    <section class="collection">
+        <div class="collection-header">
+            <h2 class="collection-title">Notre Collection</h2>
+            <p>Des T-shirts qui racontent une histoire</p>
+        </div>
+
+        <div class="filter-menu">
+            <button class="filter-btn">Tous</button>
+            <button class="filter-btn">Paris</button>
+            <button class="filter-btn">Côte d'Azur</button>
+            <button class="filter-btn">Soldes</button>
+        </div>
+
+        <div class="products-grid">
+            <div class="product-card">
+                <div class="sale-tag">-25%</div>
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=1964" alt="Paris Montmartre T-shirt">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Paris Montmartre Edition</h3>
+                    <p class="product-location">48.8867° N, 2.3431° E</p>
+                    <div class="product-reviews">
+                        <div class="stars">★★★★★</div>
+                        <span class="review-count">128 avis</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="sale-price">29.99€</span>
+                        <span class="original-price">39.99€</span>
+                    </div>
+                    <button class="add-to-cart">Ajouter au panier</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="sale-tag">-30%</div>
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1780" alt="Nice Promenade T-shirt">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Nice Promenade Edition</h3>
+                    <p class="product-location">43.7102° N, 7.2620° E</p>
+                    <div class="product-reviews">
+                        <div class="stars">★★★★☆</div>
+                        <span class="review-count">94 avis</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="sale-price">24.99€</span>
+                        <span class="original-price">34.99€</span>
+                    </div>
+                    <button class="add-to-cart">Ajouter au panier</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=2074" alt="Marseille Vieux-Port T-shirt">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Marseille Vieux-Port Edition</h3>
+                    <p class="product-location">43.2965° N, 5.3698° E</p>
+                    <div class="product-reviews">
+                        <div class="stars">★★★★★</div>
+                        <span class="review-count">156 avis</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="sale-price">34.99€</span>
+                    </div>
+                    <button class="add-to-cart">Ajouter au panier</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="sale-tag">NOUVEAU</div>
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1554568218-0f1715e72254?q=80&w=1974" alt="Paris Marais T-shirt">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Paris Le Marais Edition</h3>
+                    <p class="product-location">48.8566° N, 2.3522° E</p>
+                    <div class="product-reviews">
+                        <div class="stars">★★★★☆</div>
+                        <span class="review-count">42 avis</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="sale-price">34.99€</span>
+                    </div>
+                    <button class="add-to-cart">Ajouter au panier</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=1770" alt="Cannes T-shirt">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Cannes Croisette Edition</h3>
+                    <p class="product-location">43.5528° N, 7.0174° E</p>
+                    <div class="product-reviews">
+                        <div class="stars">★★★★★</div>
+                        <span class="review-count">89 avis</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="sale-price">34.99€</span>
+                    </div>
+                    <button class="add-to-cart">Ajouter au panier</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="sale-tag">-15%</div>
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=1915" alt="Saint-Tropez T-shirt">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Saint-Tropez Edition</h3>
+                    <p class="product-location">43.2727° N, 6.6384° E</p>
+                    <div class="product-reviews">
+                        <div class="stars">★★★★★</div>
+                        <span class="review-count">76 avis</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="sale-price">29.99€</span>
+                        <span class="original-price">34.99€</span>
+                    </div>
+                    <button class="add-to-cart">Ajouter au panier</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="sale-tag">NOUVEAU</div>
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?q=80&w=1987" alt="Antibes T-shirt">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Antibes Cap Edition</h3>
+                    <p class="product-location">43.5802° N, 7.1283° E</p>
+                    <div class="product-reviews">
+                        <div class="stars">★★★★☆</div>
+                        <span class="review-count">34 avis</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="sale-price">34.99€</span>
+                    </div>
+                    <button class="add-to-cart">Ajouter au panier</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1571945153237-4929e783af4a?q=80&w=1974" alt="Eze T-shirt">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">Eze Village Edition</h3>
+                    <p class="product-location">43.7284° N, 7.3613° E</p>
+                    <div class="product-reviews">
+                        <div class="stars">★★★★★</div>
+                        <span class="review-count">67 avis</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="sale-price">34.99€</span>
+                    </div>
+                    <button class="add-to-cart">Ajouter au panier</button>
+                </div>
+            </div>
